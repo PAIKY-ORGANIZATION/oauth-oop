@@ -35,4 +35,4 @@ jobs:
 
             docker build -t "$UNIQUE_APP_NAME" .
 
-            docker run --name "$UNIQUE_APP_NAME"  -p 3010:3000 -it -d --rm "$UNIQUE_APP_NAME"
+            docker run --name "$UNIQUE_APP_NAME"  -p 3010:3001 -it -d --rm "$UNIQUE_APP_NAME"
