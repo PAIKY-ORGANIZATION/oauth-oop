@@ -1,0 +1,38 @@
+name: main
+
+on:
+  push:
+    branches: ['master']
+
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: push
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{vars.PAID_CLOUD_HOST}} #$ for SSH, don't include port unless not using :22 . Example: 132.84.129.77.
+          username: ${{secrets.HETZNER_USER}}
+          key: ${{secrets.HETZNER_SSH_PRIVATE_KEY}}
+          passphrase: ${{ secrets.PRIVATE_KEY_PASSPHRASE }} #$ Only if required.
+
+          script: |
+            UNIQUE_APP_NAME="${{ vars.UNIQUE_APP_NAME }}"  #! UNIQUE_APP_NAME must be all lowercase and without underscores for Docker to accept it.
+            #! UNIQUE_APP_NAME must be set per-repository
+            #! If you are using Docker COMPOSE,  you don't need a unique app name for the image name. However, you still need a unique directory name.
+            REPO_PATH="${{github.repository}}"
+
+            cd ~/vsCodeMain
+            [ -d "$UNIQUE_APP_NAME/.git" ] || git clone git@github.com:$REPO_PATH.git  "$UNIQUE_APP_NAME" #! YOU NEED TO USE A KEY THAT HAS NO PASSPHRASE
+            cd "$UNIQUE_APP_NAME"
+            git fetch
+            git merge origin/master
+
+            rm ./config/shared.env || true #! Important to remove
+
+            docker rm -f "$UNIQUE_APP_NAME"
+
+            docker build -t "$UNIQUE_APP_NAME"
+
+            docker run --name "$UNIQUE_APP_NAME" -p 3010:3001 --rm -it -d "$UNIQUE_APP_NAME" 
