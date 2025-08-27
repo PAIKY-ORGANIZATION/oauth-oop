@@ -1,5 +1,5 @@
 import express, { Express, Response } from 'express'
-import { router } from './interfaces/http/router'
+import { router } from './infrastructure/http/router'
 
 
 const app: Express  = express()

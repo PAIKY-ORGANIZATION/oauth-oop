@@ -1,52 +1,78 @@
-import { inherits } from "util"
+import { randomUUID } from "crypto"
 
-class User {
+
+Interface
+
+
+//* Why "Abstract"?
+//$ If you will never instantiate User directly and it only exists as a base class for its children, then marking it as abstract is the correct design.
+
+abstract class User {
+    
+    //* why "protected" and not private: 
+    // $ "protected" makes properties accessible within the class and its subclasses. Need it for DTO and toPersistence on subclasses.
 
     //$ Keeping as many properties private for encapsulation
     constructor(
         private readonly id: string,
-        // private readonly password: string | null, //? Maybe use iheritance for oauth user and regular user
-        private readonly email: string, 
-    ){}
+        protected readonly email: string, 
+    ){
+        // this.id = randomUUID() //! THIS WILL CAUSE A BUG WHEN REHYDRATING WITH AN EXISTING ID, assign id only when creating
+    }
+
+    create(){
+        const id = randomUUID()
+    }
+
 
 
     public toDTO (){
-        return {
-            //! WITHOUT PASSWORD    
-
-        }
+        //! WITHOUT PASSWORD    
     }
 
 
-    public toPersistence (){
+    public toPersistence (): any{}
+
+
+}
+
+
+
+
+
+
+// export class OauthUser extends User {
+//     constructor(
+//         email: string,
+//         private readonly oauthProvider: string,
+//         private readonly oauthId: string
+//     ){
+//         super(email)
+//     }
+
+
+
+//     public toPersistence() {
+//         return {
+//             id: this.id,
+//             email: this.email,
+//             oauth_provider: this.oauthProvider,
+//             oauth_id: this.oauthId
+//         }
+//     }
+// }
+
+
+// export class LocalUser extends User {
+//     constructor(
+//         email: string,
+//         public passwordHash: string        
+//     ){
+//         super(email)
+//     }
+
+//     changePassword() {
         
-    }
+//     }
 
-    public changePassword () {
-        //? HASH PASSWORD
-    }
-
-}
-
-export class OatuhUser extends User {
-    constructor(
-        id: string,
-        email: string,
-        private readonly oauthProvider: string,
-        private readonly oauthId: string
-    ){
-        super(id, email)
-    }
-
-}
-
-
-export class LocalUser extends User {
-    constructor(
-        id: string,
-        email: string,
-        public passwordHash: string        
-    ){
-        super(id, email)
-    }
-}
+// }
