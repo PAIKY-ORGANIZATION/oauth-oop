@@ -1,78 +1,81 @@
-import { randomUUID } from "crypto"
+interface AuthType {
+    readonly type: 'oauth' | 'local'
+}
 
+export class Oauth implements AuthType {
+    readonly type =  'oauth'
 
-Interface
-
-
-//* Why "Abstract"?
-//$ If you will never instantiate User directly and it only exists as a base class for its children, then marking it as abstract is the correct design.
-
-abstract class User {
-    
-    //* why "protected" and not private: 
-    // $ "protected" makes properties accessible within the class and its subclasses. Need it for DTO and toPersistence on subclasses.
-
-    //$ Keeping as many properties private for encapsulation
     constructor(
-        private readonly id: string,
-        protected readonly email: string, 
-    ){
-        // this.id = randomUUID() //! THIS WILL CAUSE A BUG WHEN REHYDRATING WITH AN EXISTING ID, assign id only when creating
+        public readonly providerId: string,
+        public readonly oauthProvider: string) {
+    }
+}
+
+export class LocalAuth implements AuthType {
+    readonly type = 'local'
+
+    constructor(private password: string){}
+
+    public getPassword() {
+        return this.password
     }
 
-    create(){
-        const id = randomUUID()
+    public verifyPassword (password: string) {
+        return this.password === password
     }
-
-
-
-    public toDTO (){
-        //! WITHOUT PASSWORD    
-    }
-
-
-    public toPersistence (): any{}
-
-
 }
 
 
+interface TierType {
+    readonly name: 'free' | 'premium'
+    readonly baseCredits: number
+    readonly creditLimit: number
 
 
+    // UNIQUE_TIER_BEHAVIOR_METHOD(): void //$ Why not put this in the `User` class? Because the behavior of this could depend on the type of tier. ONLY if we are sure that it won't change it can securely be put under `User`
+    //% OPEN / CLOSED PRINCIPLE -> Open for extension: New tier behaviors can be added without modifying and affecting the User.
+}
+
+export class FreeTier implements TierType {
+    readonly name = 'free'
+    readonly baseCredits = 100
+    readonly creditLimit = 200
+}
 
 
-// export class OauthUser extends User {
-//     constructor(
-//         email: string,
-//         private readonly oauthProvider: string,
-//         private readonly oauthId: string
-//     ){
-//         super(email)
-//     }
+class PremiumTier implements TierType {
+    readonly name = "premium"
+    readonly baseCredits = 100
+    readonly creditLimit = 200
+
+    cancelTier () {
+        console.log("Subscription cancelled");
+    }
+
+} 
 
 
+export class User {
 
-//     public toPersistence() {
-//         return {
-//             id: this.id,
-//             email: this.email,
-//             oauth_provider: this.oauthProvider,
-//             oauth_id: this.oauthId
-//         }
-//     }
-// }
+    constructor(
+        public readonly id: string,
+        private readonly email: string,
+        private name: string,
+        private credits: number,
+        private readonly auth: AuthType,
+        private tier: TierType
+    ){}
 
+    transferFile(){}
 
-// export class LocalUser extends User {
-//     constructor(
-//         email: string,
-//         public passwordHash: string        
-//     ){
-//         super(email)
-//     }
+    tryCancelTier(){
+        if("cancelTier" in this.tier){ //$ Only if the tier supports cancellation
+            (this.tier as PremiumTier).cancelTier()
+        }
 
-//     changePassword() {
-        
-//     }
+        else {
+            throw new Error("Tier does not support cancellation")
+        }
+    }
 
-// }
+}
