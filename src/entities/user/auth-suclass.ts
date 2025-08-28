@@ -20,8 +20,8 @@ export class LocalAuth implements AuthType {
         return this.password
     }
 
-    public verifyPassword (password: string) {
-        return this.password === password
-    }
+    // public verifyPassword (password: string) {
+    //     return this.password === password
+    // } //! Only the hasher should know about this
 }
 

@@ -1,12 +1,12 @@
 import {Router } from 'express'
 import { validator } from './middleware/validator'
-import { signInPassword } from './controller/signin-password'
+import { registerWithPassword } from './controller/register-password'
 
 export const router = Router()
 
 
 
-router.get('/signin/password', validator(signInPassword))
+router.get('/signin/password', validator(registerWithPassword))
 
 
 

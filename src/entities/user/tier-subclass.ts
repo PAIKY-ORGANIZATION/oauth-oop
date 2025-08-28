@@ -17,8 +17,8 @@ export class FreeTier implements TierType {
 
 export class PremiumTier implements TierType {
     readonly name = "premium"
-    readonly baseCredits = 100
-    readonly creditLimit = 200
+    readonly baseCredits = 1000
+    readonly creditLimit = 2000
 
     cancelTier () {
         console.log("Subscription cancelled");
