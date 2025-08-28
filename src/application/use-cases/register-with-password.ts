@@ -1,15 +1,15 @@
 import { randomUUID } from "crypto";
-import { LocalAuth } from "../../entities/user/auth-subclass";
-import { FreeTier } from "../../entities/user/tier-subclass";
-import { User } from "../../entities/user/user";
-import { TestUserRepository } from "../../infrastructure/db/userRepository";
-import { Hasher } from "../../infrastructure/hasher";
+import { Hasher } from "../../infrastructure/hasher.js";
+import { TestUserRepository, UserRepository } from "../../infrastructure/db/userRepository.js";
+import { User } from "../../entities/user/user.js";
+import { FreeTier } from "../../entities/user/tier-subclass.js";
+import { LocalAuth } from "../../entities/user/auth-subclass.js";
 
 export class RegisterWithPasswordUseCase{
 
     constructor(
         private hasher: Hasher, 
-        private userRepository: TestUserRepository
+        private userRepository: UserRepository
     ){}   
     
     
@@ -23,7 +23,11 @@ export class RegisterWithPasswordUseCase{
          const tier = new FreeTier()
          const auth = new LocalAuth(hashed)
 
-        return new User(randomUUID(), email, name, auth, tier)
+        const user =  new User(randomUUID(), email, name, auth, tier)
+
+        this.userRepository.saveToPersistence(user)
+
+        return user
 
     }
 

@@ -1,17 +1,17 @@
+import { RegisterWithPasswordUseCase } from './application/use-cases/register-with-password.js'
 import './bootstrap.js'
 
 
 import express, { Express, Response } from 'express'
-import { router } from './infrastructure/http/router'
-import { RegisterWithPasswordUseCase } from './application/use-cases/register-with-password'
-import { BcryptHasher} from './infrastructure/hasher'
-import { TestUserRepository } from './infrastructure/db/userRepository'
+import { BcryptHasher } from './infrastructure/hasher.js'
+import { MongodbUserRepository, TestUserRepository } from './infrastructure/db/userRepository.js'
+import { router } from './infrastructure/http/router.js'
 
 
 const app: Express  = express()
 
 
-export const registerWithPasswordUseCase = new RegisterWithPasswordUseCase(new BcryptHasher, new TestUserRepository())
+export const registerWithPasswordUseCase = new RegisterWithPasswordUseCase(new BcryptHasher, new MongodbUserRepository())
 
 
 app.use(express.json())

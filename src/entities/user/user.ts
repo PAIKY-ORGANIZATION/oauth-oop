@@ -1,5 +1,5 @@
-import { AuthType, LocalAuth } from "./auth-subclass"
-import { PremiumTier, TierType } from "./tier-subclass"
+import { AuthType, LocalAuth } from "./auth-subclass.js"
+import { PremiumTier, TierType } from "./tier-subclass.js"
 
 
 
@@ -32,8 +32,9 @@ export class User {
     }
 
     tryGetPassword(){
-        if("getPassword" in this.auth){
-            return (this.auth as LocalAuth).getPassword()
+        if(this.auth instanceof LocalAuth){ //! Avoid this, what if later we want to add a "LegacyAuth" with "getPassword()".  We would violate  Open/closed since  we would need to  modify the "if" statement.
+        // if("getPassword" in this.auth){
+            this.auth.getPassword()
         }
 
         else {  throw new Error("This user not support passwords")}
@@ -41,21 +42,16 @@ export class User {
 
 
 
-    //$ I prefer simplicity a lot.
-    // getTierName(){
-    //     return this.tier.name
-    // }
-
-    // getAuthType(){
-    //     return this.auth.type
-    // }
-
-    // getName(){
-    //     return this.name
-    // } 
-
-    // getEmail(){
-    //     return this.email
+    //? TEST
+    // toPlainObject(){
+    //     return {
+    //         id: this.id,
+    //         email: this.email,
+    //         name: this.name,
+    //         auth: this.auth,
+    //         tier: this.tier,
+    //         credits: this.credits
+    //     }
     // }
 
 }

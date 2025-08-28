@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { registerWithPasswordUseCase } from '../../..';
+import { registerWithPasswordUseCase } from '../../../index.js';
 
 export const registerWithPasswordController = async(req: Request, res: Response)=>{
     

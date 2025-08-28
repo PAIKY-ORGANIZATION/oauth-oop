@@ -1,20 +1,21 @@
 import {MongoClient} from 'mongodb'
 
-export const connectToMongoDb = async ()=>{
-    const connectionURI = process.env.MONGODB_CONNECTION_URI!
-    
-    const client = new MongoClient(connectionURI)
-    
-    
+
+const connectionURI = process.env.MONGODB_CONNECTION_URI!
+
+export const mongoClient = new MongoClient(connectionURI)
+
+const connectToMongoDb = async ()=>{
     try{
-        await client.connect()        
+        await mongoClient.connect()        
     }catch(e){
         console.error(e);	
     }
-
-        
-
 }
 
+
+
+
+await connectToMongoDb()
 
 
