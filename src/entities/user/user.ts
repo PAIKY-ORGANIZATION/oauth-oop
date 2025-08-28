@@ -1,4 +1,4 @@
-import { AuthType } from "./auth-suclass"
+import { AuthType, LocalAuth } from "./auth-subclass"
 import { PremiumTier, TierType } from "./tier-subclass"
 
 
@@ -9,9 +9,9 @@ export class User {
     
     constructor(
         public readonly id: string,
-        private readonly email: string,
-        private name: string,
-        private readonly auth: AuthType,
+        public readonly email: string,
+        public name: string,
+        public readonly auth: AuthType,
         private tier: TierType
     ){
         this.credits = tier.baseCredits
@@ -30,5 +30,32 @@ export class User {
 
         else {  throw new Error("Tier does not support cancellation")}
     }
+
+    tryGetPassword(){
+        if("getPassword" in this.auth){
+            return (this.auth as LocalAuth).getPassword()
+        }
+
+        else {  throw new Error("This user not support passwords")}
+    }
+
+
+
+    //$ I prefer simplicity a lot.
+    // getTierName(){
+    //     return this.tier.name
+    // }
+
+    // getAuthType(){
+    //     return this.auth.type
+    // }
+
+    // getName(){
+    //     return this.name
+    // } 
+
+    // getEmail(){
+    //     return this.email
+    // }
 
 }

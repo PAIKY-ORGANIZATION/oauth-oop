@@ -1,4 +1,4 @@
-import { LocalAuth } from "../../entities/user/auth-suclass";
+import { LocalAuth } from "../../entities/user/auth-subclass";
 import { PremiumTier } from "../../entities/user/tier-subclass";
 import { User } from "../../entities/user/user";
 
