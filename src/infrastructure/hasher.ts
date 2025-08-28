@@ -7,7 +7,7 @@ export interface Hasher {
 
 
 
-class bcryptHasher implements Hasher {
+export class BcryptHasher implements Hasher {
 
     async hashPassword(password: string): Promise<string>{
         const saltRounds = 10

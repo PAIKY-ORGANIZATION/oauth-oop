@@ -1,8 +1,14 @@
 import express, { Express, Response } from 'express'
 import { router } from './infrastructure/http/router'
+import { RegisterWithPasswordUseCase } from './application/use-cases/register-with-password'
+import { BcryptHasher} from './infrastructure/hasher'
+import { TestUserRepository } from './infrastructure/db/userRepository'
 
 
 const app: Express  = express()
+
+
+export const registerWithPasswordUseCase = new RegisterWithPasswordUseCase(new BcryptHasher, new TestUserRepository())
 
 
 app.use(express.json())
