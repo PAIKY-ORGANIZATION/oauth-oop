@@ -1,3 +1,6 @@
+import './bootstrap.js'
+
+
 import express, { Express, Response } from 'express'
 import { router } from './infrastructure/http/router'
 import { RegisterWithPasswordUseCase } from './application/use-cases/register-with-password'

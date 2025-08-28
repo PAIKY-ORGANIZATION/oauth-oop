@@ -1,7 +1,7 @@
 import {MongoClient} from 'mongodb'
 
 export const connectToMongoDb = async ()=>{
-    const connectionURI = process.env.MONGODB_CONNECTION_URI
+    const connectionURI = process.env.MONGODB_CONNECTION_URI!
     
     const client = new MongoClient(connectionURI)
     
