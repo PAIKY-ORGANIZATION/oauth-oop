@@ -8,7 +8,7 @@ export type UserPersistence = {
   email: string;
   name: string;
   auth: AuthPersistence;
-  tierType: string
+  tierType: 'free' | 'premium';
   credits: number;      // if you persist it; otherwise compute on reconstruct
 };
 

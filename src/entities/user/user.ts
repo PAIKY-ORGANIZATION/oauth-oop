@@ -1,28 +1,29 @@
+import { randomUUID } from "crypto"
 import { UserPersistence } from "../../application/interfaces/persisted-user.js"
 import { AuthType } from "./auth-subclass.js"
 import { TierType } from "./tier-subclass.js"
 
 
 
+type createUserParams = {
+    email: string
+    name: string
+    auth: AuthType
+    tier: TierType
+}
+
+
 export class User {
     
-    private credits: number
     
     constructor(
-        public readonly id: string,
+        private id: string,
         private readonly email: string,
         private name: string,
         private readonly auth: AuthType,
-        private tier: TierType
-    ){
-        this.credits = tier.baseCredits
-    }
-
-    // transferFile(){
-    //     if(this.credits > 0)
-
-    //     this.credits - 10 //! Can get negative.
-    // }
+        private tier: TierType,
+        private credits: number
+    ){}
 
     // tryCancelTier(){
     //     if("cancelTier" in this.tier){ //$ Only if the tier supports cancellation
@@ -31,6 +32,15 @@ export class User {
         
     //     else {  throw new Error("Tier does not support cancellation")}
     // }
+
+    static createUser({email, name, auth, tier}: createUserParams){
+        //$  We need this factory because it's different when we're registering a user versus when we are rehydrating a user from the a UserRepository.
+        const id = randomUUID()
+
+        return new User(id, email, name, auth, tier, tier.baseCredits)
+
+    }
+
 
     transferCredits(amount: number){
         if(this.credits < amount) {
@@ -41,6 +51,17 @@ export class User {
     }
 
     receiveCredits(amount: number){
+
+        console.log({
+            selfCredits: this.credits,
+
+            selfCreditsLimit: this.tier.creditLimit,
+
+            amountToReceive: amount
+        });
+
+        
+
         if((this.credits + amount) > this.tier.creditLimit){
             throw new Error('Credit limit reached') //? Throw specific error instance
         }

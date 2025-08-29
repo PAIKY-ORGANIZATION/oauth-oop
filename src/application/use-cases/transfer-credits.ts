@@ -15,7 +15,18 @@ export class TransferCreditsUseCase{
                 this.repository.findById(senderUserId),
                 this.repository.findById(receiverUserId)
             ])
+
+            if(!sender) throw new Error('Sender not found')
+            if(!receiver) throw new Error('Receiver not found')
     
+
+            console.log({
+                senderId: sender.toObj().id,
+                receiverId: receiver.toObj().id
+            });
+            
+            console.log({sender, receiver});
+            
     
             //$ If one of these fails, the transaction will be "rolled back"/"reverted"
             sender.transferCredits(creditsAmount)

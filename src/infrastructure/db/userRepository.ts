@@ -12,8 +12,8 @@ export interface UserRepository {
     runAsTransaction(fn: ()=> Promise<void>): Promise<void>
     rehydrate(user: UserPersistence): User
     saveToPersistence(user: User): Promise<void>
-    findById(id: string): Promise<User>
-    findByEmail(email: string): Promise<User>
+    findById(id: string): Promise<User | null>
+    findByEmail(email: string): Promise<User | null>
 }
 
 // export class TestUserRepository implements UserRepository {
@@ -65,45 +65,49 @@ export class MongodbUserRepository implements UserRepository {
 
     rehydrate(user: UserPersistence): User {
         
-        let auth
-        if(user.auth.type === 'local') {
-            auth = new LocalAuth(user.auth.password)
-        }else {
-            auth = new Oauth(user.auth.providerId, user.auth.oauthProvider)
-        }
-        
-        return new User(user.id, user.email, user.name, auth, new FreeTier())
+        const auth = user.auth.type === 'local' ?
+            new LocalAuth(user.auth.password) :
+            new Oauth(user.auth.providerId, user.auth.oauthProvider)
+
+        const tier = user.tierType === 'free'? new FreeTier() : new FreeTier()
+
+
+        return new User(user.id, user.email, user.name, auth, tier, user.credits)
     }
 
 
-    async findById(id: string):  Promise<User> {
+    async findById(id: string):  Promise<User | null> {
         const user = await this.userCollection.findOne(
             {id}, 
-            {projection: {_id: 0}}
+            // {projection: {_id: 0}}
         ) as UserPersistence | null 
         
-        if(!user) throw new Error('User not found')   //? Throw specific error instance
+        console.log({user});
+        if(!user) return null
 
         return this.rehydrate(user)
     }
 
-    async findByEmail(email: string): Promise<User> {
+    async findByEmail(email: string): Promise<User | null> {
         
         const user = await this.userCollection.findOne(
             {email},
             {projection: {_id: 0}}
         ) as  UserPersistence | null 
     
-        if(!user) throw new Error('User not found')   //? Throw specific error instance
+        
+
+
+        if(!user) return null  
 
         return this.rehydrate(user)
     }
 
     async saveToPersistence(user: User): Promise<void> {
         const doc: UserPersistence  = user.toObj()
-        await this.userCollection.insertOne(doc, {
+        await this.userCollection.updateOne(doc, {
             session: this.transactionSession
-        })
+        }, {upsert: true})
     }
 
 }

@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { Hasher } from "../../infrastructure/hasher.js";
 import { UserRepository } from "../../infrastructure/db/userRepository.js";
 import { User } from "../../entities/user/user.js";
@@ -12,7 +11,6 @@ export class RegisterWithPasswordUseCase{
         private userRepository: UserRepository
     ){}   
     
-    
     async execute(email: string, password: string, name: string): Promise<User> {
         
         const existingUser = await this.userRepository.findByEmail(email)
@@ -23,13 +21,11 @@ export class RegisterWithPasswordUseCase{
         const tier = new FreeTier()
         const auth = new LocalAuth(hashed)
 
-        const user =  new User(randomUUID(), email, name, auth, tier)
+        const user =  User.createUser({email, name, auth, tier})
 
         this.userRepository.saveToPersistence(user)
 
         return user
 
     }
-
-
 }
