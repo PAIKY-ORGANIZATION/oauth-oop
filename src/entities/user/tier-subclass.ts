@@ -1,17 +1,24 @@
+
 export interface TierType {
     readonly name: 'free' | 'premium'
     readonly baseCredits: number
     readonly creditLimit: number
 
 
-    // UNIQUE_TIER_BEHAVIOR_METHOD(): void //$ Why not put this in the `User` class? Because the behavior of this could depend on the type of tier. ONLY if we are sure that it won't change it can securely be put under `User`
-    //% OPEN / CLOSED PRINCIPLE -> Open for extension: New tier behaviors can be added without modifying and affecting the User.
+    //! "toPersistence()" is actually now being used because Typescript can correctly infer all properties of the tier type from this interface. If properties that only exist on one type we would need this method.
+    // toPersistence(): TierPersistence
+
 }
 
 export class FreeTier implements TierType {
     readonly name = 'free'
     readonly baseCredits = 100
     readonly creditLimit = 200
+
+    // toPersistence(): TierPersistence {
+    //     return {...this}
+    // }
+
 }
 
 
@@ -19,6 +26,11 @@ export class PremiumTier implements TierType {
     readonly name = "premium"
     readonly baseCredits = 1000
     readonly creditLimit = 2000
+
+
+    // toPersistence(): TierPersistence {
+    //     return {...this}
+    // }
 
     cancelTier () {
         console.log("Subscription cancelled");

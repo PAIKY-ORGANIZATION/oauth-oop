@@ -1,27 +1,35 @@
+import { AuthPersistence, LocalAuthPersistence, OauthPersistence } from "../../application/interfaces/persisted-user.js"
+
 export interface AuthType {
     readonly type: 'oauth' | 'local'
+
+    toPersistence(): AuthPersistence
+
 }
 
 export class Oauth implements AuthType {
     readonly type =  'oauth'
 
+
+    
     constructor(
-        public readonly providerId: string,
-        public readonly oauthProvider: string) {
+        readonly providerId: string, 
+        readonly oauthProvider: string
+    ){}
+    
+    toPersistence(): OauthPersistence {
+        return {...this} 
     }
 }
 
 export class LocalAuth implements AuthType {
     readonly type = 'local'
 
-    constructor(private password: string){}
+    constructor(readonly password: string){}
 
-    public getPassword() {
-        return this.password
+
+    public toPersistence(): LocalAuthPersistence {
+        return {...this} //! even though this password is protected we can't spread it ... oh my  TS...
     }
-
-    // public verifyPassword (password: string) {
-    //     return this.password === password
-    // } //! Only the hasher should know about this
 }
 

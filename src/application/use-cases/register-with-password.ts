@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { Hasher } from "../../infrastructure/hasher.js";
-import { TestUserRepository, UserRepository } from "../../infrastructure/db/userRepository.js";
+import { UserRepository } from "../../infrastructure/db/userRepository.js";
 import { User } from "../../entities/user/user.js";
 import { FreeTier } from "../../entities/user/tier-subclass.js";
 import { LocalAuth } from "../../entities/user/auth-subclass.js";

@@ -1,3 +1,4 @@
+import { UserPersistence } from "../../application/interfaces/persisted-user.js";
 import { LocalAuth, Oauth } from "../../entities/user/auth-subclass.js";
 import { FreeTier } from "../../entities/user/tier-subclass.js";
 import { User } from "../../entities/user/user.js";
@@ -5,21 +6,6 @@ import { mongoClient } from "./mongodb.js";
 
 //! Just for learning, this is what mongodb gives:
 // type WithId<T> = T & { _id: ObjectId };
-
-
-
-type LocalAuthDoc = { type: 'local'; password: string };
-type OauthDoc = { type: 'oauth'; providerId: string; oauthProvider: string };
-type AuthDoc = LocalAuthDoc | OauthDoc;
-
-type UserDoc = {
-  id: string;
-  email: string;
-  name: string;
-  auth: AuthDoc;
-  credits: number;      // if you persist it; otherwise compute on reconstruct
-};
-
 
 
 
@@ -57,14 +43,14 @@ export class TestUserRepository implements UserRepository {
 
 export class MongodbUserRepository implements UserRepository {
 
-    private userCollection = mongoClient.db('oop_oauth').collection<UserDoc>('users')
+    private userCollection = mongoClient.db('oop_oauth').collection<UserPersistence>('users')
 
 
 
     
     async findByEmail(email: string): Promise<User | null> {
         
-        const foundUser: UserDoc | null = await this.userCollection.findOne({email}, {projection: {_id: 0}}) as  UserDoc | null 
+        const foundUser: UserPersistence | null = await this.userCollection.findOne({email}, {projection: {_id: 0}}) as  UserPersistence | null 
     
         if(!foundUser) return null        
 
@@ -82,26 +68,34 @@ export class MongodbUserRepository implements UserRepository {
     }
 
     async saveToPersistence(user: User): Promise<void> {
-        let auth: AuthDoc
 
-        if(user.auth instanceof Oauth){
-            auth = {type: user.auth.type, providerId: user.auth.providerId, oauthProvider: user.auth.oauthProvider}
-        } else if(user.auth instanceof LocalAuth){
-            
-        }
+        // if(user.auth instanceof Oauth){
+        //     auth = {type: user.auth.type, providerId: user.auth.providerId, oauthProvider: user.auth.oauthProvider}
+        // } else if(user.auth instanceof LocalAuth){
+        //     auth = {type: user.auth.type, password: user.auth.getPassword()}
+        // }
+
+        // let tier
+
+        // if(user.tier instanceof FreeTier){
+        //     tier = {name: user.tier.name, baseCredits: user.tier.baseCredits}
+        // } else if(user.tier instanceof PremiumTier){
+        //     tier = {name: user.tier.name, baseCredits: user.tier.baseCredits, creditLimit: user.tier.creditLimit}
+        // }
 
 
-        const doc:  UserDoc = {
+        const doc: UserPersistence  = {
             id: user.id,
             email: user.email,
             name: user.name,
-            
-
+            auth: user.auth.toPersistence(),
+            credits: user.credits,
+            tier: user.tier
         }
 
 
 
-        await this.userCollection.insertOne(user)
+        await this.userCollection.insertOne(doc)
     }
 
 }
