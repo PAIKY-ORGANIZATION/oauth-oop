@@ -11,10 +11,11 @@ import { mongoClient } from "./mongodb.js";
 
 export interface UserRepository {
 
-    // toPersistence(user: User): UserToPersistence
+    rehydrate(user: UserPersistence): User
+
     saveToPersistence(user: User): Promise<void>
-    // findById(id: string): Promise<User | null>
-    findByEmail(email: string): Promise<User | null>
+    findById(id: string): Promise<User>
+    findByEmail(email: string): Promise<User>
 }
 
 export class TestUserRepository implements UserRepository {
@@ -42,35 +43,43 @@ export class TestUserRepository implements UserRepository {
 export class MongodbUserRepository implements UserRepository {
 
     private userCollection = mongoClient.db('oop_oauth').collection<UserPersistence>('users')
-    
-    async findByEmail(email: string): Promise<User | null> {
+
+    rehydrate(user: UserPersistence): User {
+
+        let newUser
         
-        const foundUser: UserPersistence | null = await this.userCollection.findOne({email}, {projection: {_id: 0}}) as  UserPersistence | null 
-    
-        if(!foundUser) return null        
-
-        let user
         let auth
-
-        if(foundUser.auth.type === 'local') {
-            auth = new LocalAuth(foundUser.auth.password)
+        if(user.auth.type === 'local') {
+            auth = new LocalAuth(user.auth.password)
         }else {
-            auth = new Oauth(foundUser.auth.providerId, foundUser.auth.oauthProvider)
+            auth = new Oauth(user.auth.providerId, user.auth.oauthProvider)
         }
         
-        user = new User(foundUser.id, foundUser.email, foundUser.name, auth, new FreeTier())
-        return user
+        newUser = new User(user.id, user.email, user.name, auth, new FreeTier())
+        return newUser
+
+    }
+
+
+    async findById(id: string):  Promise<User> {
+        const user = await this.userCollection.findOne({id}, {projection: {_id: 0}}) as UserPersistence | null 
+        
+        if(!user) throw new Error('User not found')   //? Throw specific error instance
+
+        return this.rehydrate(user)
+    }
+
+    async findByEmail(email: string): Promise<User> {
+        
+        const user = await this.userCollection.findOne({email}, {projection: {_id: 0}}) as  UserPersistence | null 
+    
+        if(!user) throw new Error('User not found')   //? Throw specific error instance
+
+        return this.rehydrate(user)
     }
 
     async saveToPersistence(user: User): Promise<void> {
-        const doc: UserPersistence  = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            auth: user.auth.toPersistence(),
-            credits: user.credits,
-            tierType: user.tier.type
-        }
+        const doc: UserPersistence  = user.toObj()
         await this.userCollection.insertOne(doc)
     }
 
