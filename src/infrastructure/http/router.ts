@@ -1,6 +1,6 @@
 import {Router } from 'express'
-import { validator } from './middleware/validator'
-import { registerWithPasswordController } from './controller/register-with-password'
+import { registerWithPasswordController } from './controller/register-with-password.js'
+import { validator } from './middleware/validator.js'
 
 
 export const router = Router()
@@ -12,3 +12,4 @@ router.post('/register/password', validator(registerWithPasswordController))
 
 
 
+router.post('/transfer-credits/:userId', validator())

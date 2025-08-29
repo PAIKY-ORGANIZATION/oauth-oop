@@ -4,14 +4,19 @@ import './bootstrap.js'
 
 import express, { Express, Response } from 'express'
 import { BcryptHasher } from './infrastructure/hasher.js'
-import { MongodbUserRepository, TestUserRepository } from './infrastructure/db/userRepository.js'
+import { MongodbUserRepository} from './infrastructure/db/userRepository.js'
 import { router } from './infrastructure/http/router.js'
+import { TransferCreditsUseCase } from './application/use-cases/transfer-credits.js'
 
 
 const app: Express  = express()
 
 
-export const registerWithPasswordUseCase = new RegisterWithPasswordUseCase(new BcryptHasher, new MongodbUserRepository())
+const mongodbUserRepository = new MongodbUserRepository()
+
+export const registerWithPasswordUseCase = new RegisterWithPasswordUseCase(new BcryptHasher, mongodbUserRepository)
+
+export const transferCreditsUseCase = new TransferCreditsUseCase(mongodbUserRepository)
 
 
 app.use(express.json())
