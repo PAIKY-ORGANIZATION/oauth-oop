@@ -17,7 +17,6 @@ export interface UserRepository {
     findByEmail(email: string): Promise<User | null>
 }
 
-
 export class TestUserRepository implements UserRepository {
 
     async saveToPersistence(user: User): Promise<void> {
@@ -40,23 +39,15 @@ export class TestUserRepository implements UserRepository {
 
 }
 
-
 export class MongodbUserRepository implements UserRepository {
 
     private userCollection = mongoClient.db('oop_oauth').collection<UserPersistence>('users')
-
-
-
     
     async findByEmail(email: string): Promise<User | null> {
         
         const foundUser: UserPersistence | null = await this.userCollection.findOne({email}, {projection: {_id: 0}}) as  UserPersistence | null 
     
         if(!foundUser) return null        
-
-
-        console.log({foundUser});
-        
 
         let user
         let auth
@@ -72,33 +63,14 @@ export class MongodbUserRepository implements UserRepository {
     }
 
     async saveToPersistence(user: User): Promise<void> {
-
-        // if(user.auth instanceof Oauth){
-        //     auth = {type: user.auth.type, providerId: user.auth.providerId, oauthProvider: user.auth.oauthProvider}
-        // } else if(user.auth instanceof LocalAuth){
-        //     auth = {type: user.auth.type, password: user.auth.getPassword()}
-        // }
-
-        // let tier
-
-        // if(user.tier instanceof FreeTier){
-        //     tier = {name: user.tier.name, baseCredits: user.tier.baseCredits}
-        // } else if(user.tier instanceof PremiumTier){
-        //     tier = {name: user.tier.name, baseCredits: user.tier.baseCredits, creditLimit: user.tier.creditLimit}
-        // }
-
-
         const doc: UserPersistence  = {
             id: user.id,
             email: user.email,
             name: user.name,
             auth: user.auth.toPersistence(),
             credits: user.credits,
-            tier: user.tier
+            tierType: user.tier.type
         }
-
-
-
         await this.userCollection.insertOne(doc)
     }
 

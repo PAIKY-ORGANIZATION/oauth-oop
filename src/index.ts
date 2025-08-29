@@ -19,7 +19,6 @@ app.use(express.json())
 app.use((req, _res: Response, next)=>{
 
     console.log('New request: ', req.url);
-    
     next()
 
 })
