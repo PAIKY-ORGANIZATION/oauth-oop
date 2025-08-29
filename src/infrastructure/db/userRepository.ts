@@ -54,6 +54,10 @@ export class MongodbUserRepository implements UserRepository {
     
         if(!foundUser) return null        
 
+
+        console.log({foundUser});
+        
+
         let user
         let auth
 

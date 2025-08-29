@@ -20,8 +20,8 @@ export class RegisterWithPasswordUseCase{
         
         const hashed = await this.hasher.hashPassword(password)
 
-         const tier = new FreeTier()
-         const auth = new LocalAuth(hashed)
+        const tier = new FreeTier()
+        const auth = new LocalAuth(hashed)
 
         const user =  new User(randomUUID(), email, name, auth, tier)
 
