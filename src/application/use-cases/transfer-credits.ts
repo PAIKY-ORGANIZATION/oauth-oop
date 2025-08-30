@@ -1,4 +1,4 @@
-import { UserRepository } from "../../infrastructure/db/userRepository.js";
+import { UserRepository } from "../../infrastructure/db/repositories/user-repository-interface.js";
 
 export class TransferCreditsUseCase{
 

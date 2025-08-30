@@ -4,9 +4,9 @@ import './bootstrap.js'
 
 import express, { Express, Response } from 'express'
 import { BcryptHasher } from './infrastructure/hasher.js'
-import { MongodbUserRepository} from './infrastructure/db/userRepository.js'
 import { router } from './infrastructure/http/router.js'
 import { TransferCreditsUseCase } from './application/use-cases/transfer-credits.js'
+import { MongodbUserRepository } from './infrastructure/db/repositories/mongodb-user-repository.js'
 
 
 const app: Express  = express()

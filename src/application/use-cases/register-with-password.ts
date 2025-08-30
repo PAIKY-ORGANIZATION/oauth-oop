@@ -1,5 +1,5 @@
 import { Hasher } from "../../infrastructure/hasher.js";
-import { UserRepository } from "../../infrastructure/db/userRepository.js";
+import { UserRepository } from "../../infrastructure/db/repositories/user-repository-interface.js";
 import { User } from "../../entities/user/user.js";
 import { FreeTier } from "../../entities/user/tier-subclass.js";
 import { LocalAuth } from "../../entities/user/auth-subclass.js";

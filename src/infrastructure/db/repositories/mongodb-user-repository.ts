@@ -1,48 +1,13 @@
-import { ClientSession } from "mongodb";
-import { UserPersistence } from "../../application/interfaces/persisted-user.js";
-import { LocalAuth, Oauth } from "../../entities/user/auth-subclass.js";
-import { FreeTier } from "../../entities/user/tier-subclass.js";
-import { User } from "../../entities/user/user.js";
-import { mongoClient } from "./mongodb.js";
+import { ClientSession } from "mongodb"
+import { UserPersistence } from "../../../application/interfaces/persisted-user.js"
+import { mongoClient } from "../mongodb-connection.js"
+import { UserRepository } from "./user-repository-interface.js"
+import { User } from "../../../entities/user/user.js"
+import { LocalAuth, Oauth } from "../../../entities/user/auth-subclass.js"
+import { FreeTier, PremiumTier } from "../../../entities/user/tier-subclass.js"
 
-
-export interface UserRepository {
-    runAsTransaction(fn: ()=> Promise<void>): Promise<void>
-    saveToPersistence(user: User, isNew: boolean): Promise<void>
-    findById(id: string): Promise<User | null>
-    findByEmail(email: string): Promise<User | null>
-}
 
 // prettier-ignore
-
-
-export class TestUserRepository implements UserRepository {
-
-    //$ 2 duplicate Maps is better than trying  to find by email/id in a single Map (would need to loop)
-    private usersById = new Map<string, User>
-    private usersByEmail = new Map<string, User>
-
-
-    async runAsTransaction(fn: () => Promise<void>): Promise<void> { await fn()}
-    
-    async findById(id: string): Promise<User | null> {
-        return this.usersById.get(id) || null
-        
-    }
-    async findByEmail(email: string): Promise<User | null> {
-        return this.usersByEmail.get(email) || null
-    }
-    async saveToPersistence(user: User, _isNew: boolean): Promise<void> {
-        
-        //$ 2 duplicate Maps is better than trying  to find by email/id in a single Map (would need to loop)
-        this.usersById.set(user.toObj().id, user)
-        this.usersByEmail.set(user.toObj().email, user)
-    }
-
-
-}
-
-
 export class MongodbUserRepository implements UserRepository {
 
     private userCollection = mongoClient.db('oop_oauth').collection<UserPersistence>('users')
@@ -69,7 +34,7 @@ export class MongodbUserRepository implements UserRepository {
             new LocalAuth(user.auth.password) :
             new Oauth(user.auth.providerId, user.auth.oauthProvider)
 
-        const tier = user.tierType === 'free'? new FreeTier() : new FreeTier()
+        const tier = user.tierType === 'free'? new FreeTier() : new PremiumTier()
         return new User(user.id, user.email, user.name, auth, tier, user.credits)
     }
 

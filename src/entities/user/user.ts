@@ -18,8 +18,8 @@ export class User {
         private id: string,
         private readonly email: string,
         private name: string,
-        private readonly auth: AuthType,
-        private tier: TierType,
+        public readonly auth: AuthType,
+        public tier: TierType,
         private credits: number
     ){}
 
