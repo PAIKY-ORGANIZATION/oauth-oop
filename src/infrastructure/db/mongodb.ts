@@ -14,8 +14,6 @@ const connectToMongoDb = async ()=>{
 }
 
 
-
-
 await connectToMongoDb()
 
 
