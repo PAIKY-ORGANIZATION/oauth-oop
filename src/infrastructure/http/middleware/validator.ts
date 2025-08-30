@@ -18,6 +18,9 @@ export const validator = (controller: Handler, validator?: AnyZodObject)=>{
 
 
         }catch(e){
+
+            res.status(400).send(e.message)
+
             console.log(e);	
         }
     }

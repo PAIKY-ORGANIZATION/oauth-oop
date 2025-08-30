@@ -9,8 +9,6 @@ export interface AuthType {
 
 export class Oauth implements AuthType {
     readonly type =  'oauth'
-
-
     
     constructor(
         readonly providerId: string, 
@@ -25,11 +23,16 @@ export class Oauth implements AuthType {
 export class LocalAuth implements AuthType {
     readonly type = 'local'
 
-    constructor(readonly password: string){}
+    constructor(private password: string){}
+
+
+    changePassword(hash: string){
+        this.password = hash
+    }
 
 
     public toPersistence(): LocalAuthPersistence {
-        return {...this} //! even though this password is protected we can't spread it ... oh my  TS...
+        return {...this, password: this.password} //! even though this password is protected we can't spread it ... oh my TS...
     }
 }
 

@@ -23,7 +23,7 @@ export class RegisterWithPasswordUseCase{
 
         const user =  User.createUser({email, name, auth, tier})
 
-        this.userRepository.saveToPersistence(user)
+        await this.userRepository.saveToPersistence(user, true)
 
         return user
 

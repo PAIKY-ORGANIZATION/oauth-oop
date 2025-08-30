@@ -3,8 +3,6 @@ import { UserPersistence } from "../../application/interfaces/persisted-user.js"
 import { AuthType } from "./auth-subclass.js"
 import { TierType } from "./tier-subclass.js"
 
-
-
 type createUserParams = {
     email: string
     name: string

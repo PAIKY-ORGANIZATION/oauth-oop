@@ -6,12 +6,10 @@ import { User } from "../../entities/user/user.js";
 import { mongoClient } from "./mongodb.js";
 
 
-
-
 export interface UserRepository {
     runAsTransaction(fn: ()=> Promise<void>): Promise<void>
     rehydrate(user: UserPersistence): User
-    saveToPersistence(user: User): Promise<void>
+    saveToPersistence(user: User, isNew: boolean): Promise<void>
     findById(id: string): Promise<User | null>
     findByEmail(email: string): Promise<User | null>
 }
@@ -79,7 +77,7 @@ export class MongodbUserRepository implements UserRepository {
     async findById(id: string):  Promise<User | null> {
         const user = await this.userCollection.findOne(
             {id}, 
-            // {projection: {_id: 0}}
+            {projection: {_id: 0}, session: this.transactionSession}
         ) as UserPersistence | null 
         
         console.log({user});
@@ -92,7 +90,7 @@ export class MongodbUserRepository implements UserRepository {
         
         const user = await this.userCollection.findOne(
             {email},
-            {projection: {_id: 0}}
+            {projection: {_id: 0}, session: this.transactionSession}
         ) as  UserPersistence | null 
     
         
@@ -103,11 +101,19 @@ export class MongodbUserRepository implements UserRepository {
         return this.rehydrate(user)
     }
 
-    async saveToPersistence(user: User): Promise<void> {
+    //$ I a single method for both actions because I believe it also works well in other databases such as Prisma with "prisma.upsert"
+    async saveToPersistence(user: User, isNew: boolean): Promise<void> {
         const doc: UserPersistence  = user.toObj()
-        await this.userCollection.updateOne(doc, {
-            session: this.transactionSession
-        }, {upsert: true})
+
+        if(isNew){
+            this.userCollection.insertOne(doc)
+        }else {
+            this.userCollection.replaceOne(
+                { id: user.toObj().id}, 
+                doc,
+                {session: this.transactionSession}
+            )
+        }
     }
 
 }

@@ -7,7 +7,7 @@ export class TransferCreditsUseCase{
 
     async execute(creditsAmount: number, senderUserId: string, receiverUserId: string){
         
-        
+        //$ We run in a single transaction so that if one operation fails, the whole transaction REVERTS.
         await this.repository.runAsTransaction(async ()=>{
             
             //$ We run these inside of a transaction in relevant fields (credits) change.
@@ -19,15 +19,6 @@ export class TransferCreditsUseCase{
             if(!sender) throw new Error('Sender not found')
             if(!receiver) throw new Error('Receiver not found')
     
-
-            console.log({
-                senderId: sender.toObj().id,
-                receiverId: receiver.toObj().id
-            });
-            
-            console.log({sender, receiver});
-            
-    
             //$ If one of these fails, the transaction will be "rolled back"/"reverted"
             sender.transferCredits(creditsAmount)
             receiver.receiveCredits(creditsAmount)
@@ -35,8 +26,8 @@ export class TransferCreditsUseCase{
     
             //? This needs to support transactions
 
-            await this.repository.saveToPersistence(sender),
-            await this.repository.saveToPersistence(receiver)
+            await this.repository.saveToPersistence(sender, false),
+            await this.repository.saveToPersistence(receiver, false)
         })
 
 
