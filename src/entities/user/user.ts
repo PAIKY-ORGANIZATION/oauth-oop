@@ -58,8 +58,6 @@ export class User {
             amountToReceive: amount
         });
 
-        
-
         if((this.credits + amount) > this.tier.creditLimit){
             throw new Error('Credit limit reached') //? Throw specific error instance
         }
@@ -72,7 +70,7 @@ export class User {
             id: this.id,
             email: this.email,
             name: this.name,
-            auth: this.auth.toPersistence(),
+            auth: this.auth.toObj(),
             tierType: this.tier.type,
             credits: this.credits
         }

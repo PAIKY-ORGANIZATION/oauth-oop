@@ -65,6 +65,7 @@ export class MongodbUserRepository implements UserRepository {
     async saveToPersistence(user: User, isNew: boolean): Promise<void> {
         const doc: UserPersistence  = user.toObj()
 
+        //% Users can be either inserted (new users) or replaced (UPDATED users)
         if(isNew){
             this.userCollection.insertOne(doc)
         }else {

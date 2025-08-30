@@ -3,7 +3,7 @@ import { AuthPersistence, LocalAuthPersistence, OauthPersistence } from "../../a
 export interface AuthType {
     readonly type: 'oauth' | 'local'
 
-    toPersistence(): AuthPersistence
+    toObj(): AuthPersistence
 
 }
 
@@ -15,7 +15,7 @@ export class Oauth implements AuthType {
         readonly oauthProvider: string
     ){}
     
-    toPersistence(): OauthPersistence {
+    toObj(): OauthPersistence {
         return {...this} 
     }
 }
@@ -31,7 +31,7 @@ export class LocalAuth implements AuthType {
     }
 
 
-    public toPersistence(): LocalAuthPersistence {
+    public toObj(): LocalAuthPersistence {
         return {...this, password: this.password} //! even though this password is protected we can't spread it ... oh my TS...
     }
 }
