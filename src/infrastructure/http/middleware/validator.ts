@@ -5,8 +5,6 @@ import { AnyZodObject } from "zod/v3";
 
 
 export const validator = (controller: Handler, validator?: AnyZodObject)=>{
-
-    
     return async(req: Request, res: Response, next: NextFunction) => {
         try{
 
@@ -18,7 +16,7 @@ export const validator = (controller: Handler, validator?: AnyZodObject)=>{
 
 
         }catch(e){
-            
+
             res.status(400).send(e.message)
 
             console.log(e);	

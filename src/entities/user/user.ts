@@ -2,6 +2,7 @@ import { randomUUID } from "crypto"
 import { UserPersistence } from "../../application/interfaces/persisted-user.js"
 import { AuthType } from "./auth-subclass.js"
 import { TierType } from "./tier-subclass.js"
+import { NotEnoughCreditsError } from "../../application/errors/entity-errors.js"
 
 type createUserParams = {
     email: string
@@ -12,8 +13,7 @@ type createUserParams = {
 
 
 export class User {
-    
-    
+
     constructor(
         private id: string,
         private readonly email: string,
@@ -42,7 +42,7 @@ export class User {
 
     transferCredits(amount: number){
         if(this.credits < amount) {
-            throw new Error('Not enough credits') //? Throw specific error instance
+            throw new NotEnoughCreditsError()
         }
 
         this.credits -= amount

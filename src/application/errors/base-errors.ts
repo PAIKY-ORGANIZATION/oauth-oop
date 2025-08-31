@@ -20,10 +20,25 @@ export class BadRequest extends AppError {
 }
 
 
-export declare class UnprocessableEntity extends AppError {
-    message: any;
-    constructor(message: any);
+export class UnprocessableEntity extends AppError {
+    message;
+    constructor(message: string) {
+        super(message, 422, null);
+        this.message = message;
+    }
 }
+
+
+
+
+export class Unauthorized extends AppError {
+    message;
+    constructor(message: string) {
+        super(message, 401, null);
+        this.message = message;
+    }
+}
+
 
 
 export class InternalException extends AppError {
@@ -33,14 +48,5 @@ export class InternalException extends AppError {
         super(message, 500, error);
         this.message = message;
         this.error = error;
-    }
-}
-
-
-export class Unauthorized extends AppError {
-    message;
-    constructor(message: string) {
-        super(message, 401, null);
-        this.message = message;
     }
 }

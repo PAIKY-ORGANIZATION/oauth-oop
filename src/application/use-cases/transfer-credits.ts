@@ -7,6 +7,8 @@ export class TransferCreditsUseCase{
 
     async execute(creditsAmount: number, senderUserId: string, receiverUserId: string){
         
+        
+
         //$ We run in a single transaction so that if one operation fails, the whole transaction REVERTS.
         await this.repository.runAsTransaction(async ()=>{
             
