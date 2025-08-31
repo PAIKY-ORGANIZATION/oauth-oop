@@ -29,9 +29,5 @@ export class TransferCreditsUseCase{
             await this.repository.saveToPersistence(sender, false),
             await this.repository.saveToPersistence(receiver, false)
         })
-
-
-
     }
-
 }

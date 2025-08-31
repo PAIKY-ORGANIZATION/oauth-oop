@@ -17,7 +17,6 @@ const transferCreditsUseCase = new TransferCreditsUseCase(userRepository)
 
 test('Should register user', async()=>{
     
-    
     const email = 'lol@email.com'
 
     await registerWithPasswordUseCase.execute(email, 'my_password', 'my_name')
