@@ -42,26 +42,13 @@ export class User {
 
 
     transferCredits(amount: number){
-        if(this.credits < amount) {
-            throw new NotEnoughCreditsError()
-        }
+        if(this.credits < amount) {  throw new NotEnoughCreditsError()}
 
         this.credits -= amount
     }
 
     receiveCredits(amount: number){
-
-        console.log({
-            selfCredits: this.credits,
-
-            selfCreditsLimit: this.tier.creditLimit,
-
-            amountToReceive: amount
-        });
-
-        if((this.credits + amount) > this.tier.creditLimit){
-            throw new CreditLimitReachedError()
-        }
+        if((this.credits + amount) > this.tier.creditLimit){ throw new CreditLimitReachedError()}
 
         this.credits += amount
     }

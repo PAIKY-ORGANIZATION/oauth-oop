@@ -4,6 +4,7 @@ import { RegisterWithPasswordUseCase } from "../application/use-cases/register-w
 import { User } from "../entities/user/user.js";
 import { TestUserRepository } from "../infrastructure/db/repositories/test-user-repository.js";
 import { TransferCreditsUseCase } from "../application/use-cases/transfer-credits.js";
+import { BadRequest } from "../application/errors/base-errors.js";
 
 
 
@@ -55,8 +56,9 @@ test('Should not transfer credits', async()=>{
     const senderUser = await registerWithPasswordUseCase.execute('test3@lol.test', 'test3', 'test3')
     const receiverUser = await registerWithPasswordUseCase.execute('test4@lol.test', 'test4', 'test4')
 
-    await transferCreditsUseCase.execute(amountToTransfer, senderUser.toObj().id, receiverUser.toObj().id)
-
-    
+    //$ This is how you expect error instances. (ONLY for async functions you need to chain `.rejects`)
+    await expect(
+        transferCreditsUseCase.execute(amountToTransfer, senderUser.toObj().id, receiverUser.toObj().id)
+    ).rejects.toThrow(BadRequest)
 
 })
