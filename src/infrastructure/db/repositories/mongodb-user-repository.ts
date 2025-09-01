@@ -20,7 +20,7 @@ export class MongodbUserRepository implements UserRepository {
             await this.transactionSession.withTransaction(fn)
             
         }catch(e){
-            throw new Error('Transaction rolled back with error: ' + e)	
+            throw new Error('Database transaction rolled back with error: ' + e)	
         }finally{
             this.transactionSession?.endSession()
             this.transactionSession = undefined

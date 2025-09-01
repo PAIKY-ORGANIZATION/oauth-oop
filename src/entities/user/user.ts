@@ -2,7 +2,8 @@ import { randomUUID } from "crypto"
 import { UserPersistence } from "../../application/interfaces/persisted-user.js"
 import { AuthType } from "./auth-subclass.js"
 import { TierType } from "./tier-subclass.js"
-import { NotEnoughCreditsError } from "../../application/errors/entity-errors.js"
+import { CreditLimitReachedError, NotEnoughCreditsError } from "../../application/errors/entity-errors.js"
+import { BadRequest } from "../../application/errors/base-errors.js"
 
 type createUserParams = {
     email: string
@@ -59,7 +60,7 @@ export class User {
         });
 
         if((this.credits + amount) > this.tier.creditLimit){
-            throw new Error('Credit limit reached') //? Throw specific error instance
+            throw new CreditLimitReachedError()
         }
 
         this.credits += amount

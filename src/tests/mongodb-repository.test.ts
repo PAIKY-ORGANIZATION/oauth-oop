@@ -13,7 +13,6 @@ const mongodbUserRepository = new  MongodbUserRepository()
 
 test('Should insert user', async ()=>{
 
-
     const email = 'testEmail'
 
     const user = new User('testId', email, 'name', new LocalAuth('Password'), new FreeTier(), 123)

@@ -1,5 +1,6 @@
 import { Handler, NextFunction, Request, Response } from "express"
 import { AnyZodObject } from "zod/v3";
+import { AppError, InternalException } from "../../../application/errors/base-errors.js";
 
 
 
@@ -16,10 +17,14 @@ export const validator = (controller: Handler, validator?: AnyZodObject)=>{
 
 
         }catch(e){
-
-            res.status(400).send(e.message)
-
-            console.log(e);	
+            let exception
+            console.log('Caught Error: ', e);
+            if(e instanceof AppError){
+                exception = e;
+            }else {
+                exception = new InternalException('Internal Exception', e)
+            }
+            next(exception)
         }
     }
 

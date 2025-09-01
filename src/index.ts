@@ -24,7 +24,6 @@ export const transferCreditsUseCase = new TransferCreditsUseCase(mongodbUserRepo
 app.use(express.json())
 
 
-app.use(errorMiddleware)
 
 app.use((req, _res: Response, next)=>{
     console.log('New request: ', req.url);
@@ -35,8 +34,9 @@ app.use((req, _res: Response, next)=>{
 app.use('/api', router)
 
 
-const port = process.env.PORT || 3001
+app.use(errorMiddleware)
 
+const port = process.env.PORT || 3001
 app.listen(port, ()=>{
     console.log(`Server running on port ${port}`);
 })
