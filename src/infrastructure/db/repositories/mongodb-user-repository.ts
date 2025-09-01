@@ -1,15 +1,15 @@
-import { ClientSession } from "mongodb"
+import { ClientSession, MongoServerError } from "mongodb"
 import { UserPersistence } from "../../../application/interfaces/persisted-user.js"
 import { mongoClient } from "../mongodb-connection.js"
 import { UserRepository } from "./user-repository-interface.js"
 import { User } from "../../../entities/user/user.js"
 import { LocalAuth, Oauth } from "../../../entities/user/auth-subclass.js"
 import { FreeTier, PremiumTier } from "../../../entities/user/tier-subclass.js"
+import { BadRequest } from "../../../application/errors/base-errors.js"
 
 
 // prettier-ignore
 export class MongodbUserRepository implements UserRepository {
-
     private userCollection = mongoClient.db('oop_oauth').collection<UserPersistence>('users')
 
     private transactionSession: ClientSession | undefined 
@@ -20,7 +20,11 @@ export class MongodbUserRepository implements UserRepository {
             await this.transactionSession.withTransaction(fn)
             
         }catch(e){
-            throw new Error('Database transaction rolled back with error: ' + e)	
+            if(e instanceof MongoServerError){
+                throw new Error('MongoDB transaction rolled back with error: ' + e)	
+            }else{
+                throw e //* Let the internal error propagate (Even a BadRequest such as in `saveToPersistence`)
+            }
         }finally{
             this.transactionSession?.endSession()
             this.transactionSession = undefined
@@ -67,13 +71,17 @@ export class MongodbUserRepository implements UserRepository {
 
         //% Users can be either inserted (new users) or replaced (UPDATED users)
         if(isNew){
-            this.userCollection.insertOne(doc)
+            await this.userCollection.insertOne(doc)
         }else {
-            this.userCollection.replaceOne(
+            const existing = await this.userCollection.findOne({id: doc.id})
+            if(!existing){throw new BadRequest('User with  id ' + doc.id + 'not found')}
+
+            await this.userCollection.replaceOne(
+                // { id: 'AÑLSD'}, 
                 { id: user.toObj().id}, 
                 doc,
                 {session: this.transactionSession}
-            )
+            )            
         }
     }
 
